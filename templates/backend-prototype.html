@@ -1,0 +1,212 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- JQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+	<title>Network Intrusion detection system</title>
+    
+    <style type="text/css">
+        #top_nav{
+            /*position: fixed;*/
+            margin: 2% auto;
+        }
+        #top_nav .col-sm-5{
+            float: left;
+            margin: 0px;
+            padding: 0px;
+        }
+        #top_nav .col-sm-5 .subNavitems{
+            float: left;
+            font-size: 25px;
+        }
+        #top_nav .col-sm-5 .subNavitems a{
+            color: blue;
+            padding-left: 0px;
+            text-decoration: none;
+        }
+        #top_nav .col-sm-5 .btns{
+            float: right;
+            padding-right: 1%;
+            display: inline;
+            width: auto;
+            display: none;
+        }
+        #top_nav .col-sm-5 .btns .btn{
+            float: left;
+            width: 100%;
+            margin-right: 2%;
+        }
+        #top_nav .col-sm-5 .btns .btn button{
+            background-color: blue;
+            color: white;
+            border-radius: 7px;
+            border: none;
+            padding: 1% 20%;
+        }
+        
+        #body .information{
+            margin-top: 5%;
+        }
+        #body .information h2{
+            text-align: center;
+            margin-bottom: 4%;
+        }
+        #body .information p{
+            margin-bottom: 6%;
+        }   
+        #body .test{
+            text-align: center;
+            border: 2px dotted gray;
+            padding: 2%;
+            border-radius: 10px;
+        }
+        #body .test .sub_test{
+            display: inline;
+            margin: 2px;
+        }
+        #body .test .sub_test select, 
+        #body .test .sub_test button{
+            border: 1px solid lightblue;
+            border-radius: 7px;
+            padding: 1% 2%;
+            margin-top: 1%;
+        }
+        #body .test .sub_test button{
+            background-color: lightblue;
+        }
+        #body .test .sub_test button:hover{
+            background-color: rgb(225, 225, 225);
+            
+        }
+        
+        #body .results{
+            text-align: center;
+            margin: 1% auto 5% auto;
+            padding-top: 2%;
+            width: 100%;
+        }
+        #body .results table{
+            border-collapse: collapse;
+            /*border: 1px solid lightblue;*/
+            width: 100%;
+            padding: 2% 5%;
+            margin-top: 2%;
+        }
+        #body .results table span{
+        }
+        #body .results table tr{
+            border-bottom: 1px solid lightblue;
+        }
+        #body .results table tr th,
+        #body .results table tr td{
+            padding: 1%;
+        }
+
+    </style>
+    
+</head>
+<body>
+	<div class="row" id="top_nav">
+		<div class="col-sm-1" ></div>
+		<div class="col-sm-5">
+			<div class="subNavitems">
+				<a href="prototype.html">
+                    Network Intrusion detection system
+				</a>
+			</div>
+		</div>
+		<div class="col-sm-5">
+                <div class="btns">
+                    <div class="btn">
+                        <button >Information</button>
+<!--                    </div>
+                    <div class="btn">
+-->                        <button >Test</button>
+                    </div>
+                </div>
+		</div>
+		<div class="col-sm-1" ></div>
+    </div>
+    
+    <div class="row" id="body">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+            <div class="information">
+                <h2>Network Intrusion detection system <br><i>using Artificial Intelligence</i></h2>
+                <p>
+                    Scan network packets as they arrive and identify them if they are malicious or benign<br>
+                    This is archived by the use of artificial inteligence technique 
+                </p>
+            </div>
+            <br>
+            
+            <div class="test">
+                <h4>Use the bolow table to select the dataset and the training model use</h4>
+                <div class="sub_test">
+                    <select id="dataset">
+                        <option value="">--Dataset--</option>
+                        <option value="kdd">KDD+</option>
+                        <option value="cicids">CICIDS 2017</option>
+                    </select>
+                </div>
+                <div class="sub_test">
+                    <select id="model">
+                        <option value="">--Model--</option>
+                        <option value="naive">Naive bayes</option>
+                        <option value="SVM">Support Vector Machine</option>
+                        <option value="SVM">Neural Network</option>
+                    </select>
+                </div>
+                <div class="sub_test">
+                    <button>Run Test</button>
+                </div>
+            </div>
+            <br>
+            
+            <div class="results">
+                <h4>Results</h4>
+                <table>
+                    <span col="1"></span>
+                    <span col="1"></span>
+                    <span col="1"></span>
+                    <tbody>
+                        <tr>
+                            <th>Model</th>
+                            <th>Dataset</th>
+                            <th>Accuracy</th>
+                        </tr>
+                        <tr>
+                            <td>Support Vector Machine </td>
+                            <td>KDD+</td>
+                            <td>95.6325548</td>
+                        </tr>
+                        <tr>
+                            <td>Naive Bayes</td>
+                            <td>CICIDS 2017</td>
+                            <td>88.3655874</td>
+                        </tr>
+                        <tr>
+                            <td>Neural Network</td>
+                            <td>KDD+</td>
+                            <td>93.9584553</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-1"></div>
+    </div>
+    
+    
+</body>      
+</html>
