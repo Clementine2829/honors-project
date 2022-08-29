@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,21 +74,27 @@
             margin: 2px;
         }
         #body .test .sub_test select, 
-        #body .test .sub_test button{
+        #submit_btn,
+        #reset_btn{
             border: 1px solid lightblue;
             border-radius: 7px;
             padding: 1% 2%;
             margin-top: 1%;
         }
-        #body .test .sub_test button{
+        #submit_btn{
             background-color: lightblue;
         }
-        #body .test .sub_test button:hover{
+        #submit_btn:hover{
             background-color: rgb(225, 225, 225);
-            
+        }
+        #reset_btn{
+            border: 1px solid red;
+            background-color: red;
+            color: white
         }
         
         #body .results{
+            display: none;
             text-align: center;
             margin: 1% auto 5% auto;
             padding-top: 2%;
@@ -102,8 +107,6 @@
             padding: 2% 5%;
             margin-top: 2%;
         }
-        #body .results table span{
-        }
         #body .results table tr{
             border-bottom: 1px solid lightblue;
         }
@@ -113,15 +116,14 @@
         }
 
     </style>
-    
 </head>
 <body>
 	<div class="row" id="top_nav">
 		<div class="col-sm-1" ></div>
 		<div class="col-sm-5">
 			<div class="subNavitems">
-				<a href="prototype.html">
-                    Network Intrusion detection system
+				<a href="/">
+                    Network Intrusion detection
 				</a>
 			</div>
 		</div>
@@ -142,33 +144,34 @@
         <div class="col-sm-1"></div>
         <div class="col-sm-10">
             <div class="information">
-                <h2>Network Intrusion detection system <br><i>using Artificial Intelligence</i></h2>
+                <h2>Network Intrusion detection using<br><i> Artificial Intelligence</i></h2>
                 <p>
-                    Scan network packets as they arrive and identify them if they are malicious or benign<br>
-                    This is archived by the use of artificial inteligence technique 
+                    <br>Use the form below to run your test 
                 </p>
             </div>
-            <br>
             
             <div class="test">
                 <h4>Use the bolow table to select the dataset and the training model use</h4>
                 <div class="sub_test">
-                    <select id="dataset">
+                    <select id="dataset" onchange="get_dataset()">
                         <option value="">--Dataset--</option>
                         <option value="kdd">KDD+</option>
                         <option value="cicids">CICIDS 2017</option>
                     </select>
                 </div>
                 <div class="sub_test">
-                    <select id="model">
+                    <select id="model" onchange="get_model()">
                         <option value="">--Model--</option>
-                        <option value="naive">Naive bayes</option>
-                        <option value="SVM">Support Vector Machine</option>
-                        <option value="SVM">Neural Network</option>
+                        <option value="nb">Naive bayes</option>
+                        <option value="nn">Neural Network</option>
+                        <option value="svm">Support Vector Machine</option>
                     </select>
                 </div>
                 <div class="sub_test">
-                    <button>Run Test</button>
+                    <button id="submit_btn">Run Test</button>
+                </div>
+                <div class="sub_test">
+                    <button id="reset_btn">Restart page</button>
                 </div>
             </div>
             <br>
@@ -179,12 +182,13 @@
                     <span col="1"></span>
                     <span col="1"></span>
                     <span col="1"></span>
-                    <tbody>
+                    <tbody id="table_body">
                         <tr>
                             <th>Model</th>
                             <th>Dataset</th>
                             <th>Accuracy</th>
                         </tr>
+                        <!--
                         <tr>
                             <td>Support Vector Machine </td>
                             <td>KDD+</td>
@@ -200,13 +204,108 @@
                             <td>KDD+</td>
                             <td>93.9584553</td>
                         </tr>
+                        -->
+
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="col-sm-1"></div>
     </div>
-    
-    
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $("#submit_btn").click(function(){
+
+                let dataset = get_dataset();
+                let model = get_model();
+
+                if(dataset == "" || model ==""){
+                    return;
+                }
+
+                let url = dataset + "/" + model;
+                $("#submit_btn").prop("disabled", false);
+                $("#submit_btn").html("Submit");
+                $("#reset_btn").prop("disabled", false);
+                $("#reset_btn").css({"display": "inline-block"});
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(){
+                    if (this.readyState > 0 || this.readyState < 4){
+                        $("#submit_btn").prop("disabled", true);
+                        $("#submit_btn").html("loading...");
+                        $("#reset_btn").prop("disabled", true);
+                        $("#reset_btn").css({"display": "none"});
+                    }
+                    if (this.readyState == 4 && this.status == 200) {
+                        $("#submit_btn").prop("disabled", false);
+                        $("#submit_btn").html("Submit");
+                        $("#reset_btn").prop("disabled", false);
+                        $("#reset_btn").css({"display": "inline-block"});
+
+                        let response_text = this.responseText;
+                        if(response_text != ""){
+                            response_text = JSON.parse(response_text)
+                            $("#body .results").css({"display":"inline-block"})
+                            dataset_name = "";
+                            model_name = "";
+                            if(model == "nb"){
+                                model_name = "Naive Bayes";
+                            }else if(model == "nn"){
+                                model_name = "Neural Network";
+                            }else if(model == "svm"){
+                                model_name = "Support Vector Machine";
+                            }
+                            if (dataset == "kdd"){
+                                dataset_name = "KDD+";
+                            }else if(dataset == "cicids"){
+                                dataset_name = "CICIDS 2017";
+                            }
+                            response_text = response_text.accuracy;
+                            response_text = "<tr><td>" + dataset_name + "</td><td>" + model_name + "</td><td>" + response_text + "</td></tr>";
+                        }else{
+                            response_text = "<tr><td><p style='color: red'> Internal error occured</p></td></tr>";
+                            console.log("response: " + response_text)
+                            return;
+                        }
+                        let results = $("#table_body").html() + response_text;
+                        console.log("response: " + response_text)
+                        $("#table_body").html(results)
+
+                    }
+                }
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            });
+            $("#reset_btn").click(function(){
+                window.location = "/";
+            });
+        });
+
+        function get_dataset(){
+            let dataset = $("#dataset").val();
+            if (dataset == "kdd" || dataset == "cicids"){
+                $("#dataset").css({"border-color": "lightblue"})
+                return dataset;
+            }else{
+                $("#dataset").css({"border-color": "red"})
+                return "";
+            }
+        }
+            
+        function get_model(){
+            let model = $("#model").val();
+            if (model == "nb" || model == "nn" || model == "svm"){
+                $("#model").css({"border-color": "lightblue"})
+                return model;
+            }else{
+                $("#model").css({"border-color": "red"})
+                return "";
+            }
+        }
+    </script>
+
 </body>      
 </html>
