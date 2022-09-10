@@ -1,3 +1,4 @@
+import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,6 +12,8 @@ from keras.utils import to_categorical
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
+import joblib
+from pickle import load
 
 def sigmoid(x):
     z = np.exp(-x)
@@ -67,7 +70,7 @@ def cicids_train_pre_processing(df):
     # remove special character
     df[['Label']] = np.where(df[['Label']] == 'BENIGN', 1, 0)
 
-    X = df[['FlowDuration', 'TotalFwdPackets', 'TotalFwdPackets', 'TotalBackwardPackets',
+    X = df[['FlowDuration', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
@@ -144,6 +147,51 @@ def data_train(size):
         return df_train
 
 
+def model_select(size, data):
+    
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+    f.write("nn")
+    f.close()
+
+    data_to_file = "Neural Network Scanning data " +  str(datetime.datetime.now()) + "\n"
+    if size != 4:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        X_data = data.reshape(-1, 5)
+    else:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        temp_data = data.reshape(-1, 5)
+        X_data = []
+        for x in range(len(temp_data)):
+            j = list(temp_data[x])
+            j.pop(3) # remove fwd length
+            j.pop(2) # remove bck length
+
+            X_data.append(j)
+
+    predict = mj.predict(X_data)
+
+    results = []
+    percentage = 0
+    for x in range(len(temp_data)):
+        j = list(temp_data[x])
+        if(predict[x] == 0):
+            j.append(False)
+        else:
+            j.append(True)
+            percentage += 1
+        data_to_file += str(j) + "\n"
+    
+        results.append(j)
+
+    percentage = percentage / len(temp_data) * 100     
+
+    data_to_file += "Percentage: " + str(percentage) + "%\n\n"
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
+    f.write(data_to_file)
+    f.close()
+
+    return results
+
 def load_main(size):
     net = MyNeuralNetwork()
     net.add(FCLayer(4, size * 3))
@@ -161,7 +209,26 @@ def load_main(size):
     # net.fit(X_train[0:], y_train[0:], epochs=X_train.size, learning_rate=0.1)
     net.fit(X_train[0:], y_train[0:], epochs=5, learning_rate=0.1)
 
-    out = net.predict(X_test[0:])
+
+    if(size == 4):
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
+        joblib.dump(net, model_path)        
+        model_nn = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+        f.write("svm")
+        f.close()
+
+    else:
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
+        joblib.dump(net, model_path)
+        model_nn = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
+        f.write("svm")
+        f.close()
+
+    out = model_nn.predict(X_test[0:])
 
     accuracy, pred_values, truth_values = net.get_accuracy(out, y_test[0:])
 

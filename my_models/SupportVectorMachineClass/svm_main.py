@@ -1,8 +1,18 @@
+import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# the below are used for plotting graphs 
+from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+
+import joblib
+from pickle import load
+
 from  my_models.SupportVectorMachineClass.SupportVectorMachine import SVM
+#from  SupportVectorMachine import SVM
 
 
 def kdd_train_pre_processing(df):
@@ -29,7 +39,7 @@ def cicids_train_pre_processing(df):
     # remove special character
     df[['Label']] = np.where(df[['Label']] == 'BENIGN', 1, 0)
 
-    X = df[['FlowDuration', 'TotalFwdPackets', 'TotalFwdPackets', 'TotalBackwardPackets',
+    X = df[['FlowDuration', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
@@ -91,12 +101,62 @@ def dataset_selector(size):
 
 def accuracy(y_true, y_pred):
     accuracy = np.sum(y_true == y_pred) / len(y_true) * 100
+    print("y_true")
+    print(y_true)
+    print("y_pred")
+    print(y_pred)
 
     return round(accuracy, 2)
 
 # plot results
 def get_hyperplane(x, w, b, offset):
     return (-w[0] * x - b + offset) / w[1]
+
+
+def model_select(size, data):
+    
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+    f.write("svm")
+    f.close()
+
+    data_to_file = "SVM Scanning data " +  str(datetime.datetime.now()) + "\n"
+    if size != 4:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        X_data = data.reshape(-1, 5)
+    else:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        temp_data = data.reshape(-1, 5)
+        X_data = []
+        for x in range(len(temp_data)):
+            j = list(temp_data[x])
+            j.pop(3) # remove fwd length
+            j.pop(2) # remove bck length
+
+            X_data.append(j)
+
+    predict = mj.predict(X_data)
+
+    results = []
+    percentage = 0
+    for x in range(len(temp_data)):
+        j = list(temp_data[x])
+        if(predict[x] == 0):
+            j.append(False)
+        else:
+            j.append(True)
+            percentage += 1
+        data_to_file += str(j) + "\n"
+    
+        results.append(j)
+
+    percentage = percentage / len(temp_data) * 100     
+
+    data_to_file += "Percentage: " + str(percentage) + "%\n"
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
+    f.write(data_to_file)
+    f.close()
+
+    return results
 
 
 def plot_graph(clf, X_train, X_test, y_train, y_test):
@@ -131,6 +191,65 @@ def plot_graph(clf, X_train, X_test, y_train, y_test):
 
     plt.show()
 
+def roc_curve(y, pred):
+    #print("Y")
+    #print(y)
+    #print("pred")
+    #print(pred)
+
+    #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.RocCurveDisplay.html#sklearn.metrics.RocCurveDisplay
+    fpr, tpr, thresholds = metrics.roc_curve(np.array(y), np.array(pred), pos_label=1)
+    roc_auc = metrics.auc(fpr, tpr)
+    display = metrics.RocCurveDisplay(fpr=fpr, tpr=tpr, roc_auc=roc_auc, estimator_name='SVM ROC Curve')
+    
+    display.plot()
+    plt.show()
+
+def plot_confusion_matrix(y_true, y_pred):
+    print("confusiom matrix values")
+
+    print(len(y_true))
+    print(len(y_pred))
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for i in range(len(y_pred)):
+        if i < 150:
+            print("Truth: " + str(y_true[i]) + " Pred: " + str(y_pred[i]))
+
+        if y_true[i] == 1 and y_pred[i] == 1:
+            tp += 1
+        elif y_true[i] == 1 and y_pred[i] == 0:
+            fn += 1
+        elif y_true[i] == 0 and y_pred[i] == 1:
+            fp += 1
+        elif y_true[i] == 0 and y_pred[i] == 0:
+            tn += 1
+
+    print("TP: " + str(tp))
+    print("TN: " + str(tn))
+    print("FP: " + str(fp))
+    print("FN: " + str(fn))
+
+
+    confusion_matrix(y_true, y_true)
+    cf_matrix = confusion_matrix(y_true, y_true)
+    print(cf_matrix)
+    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues')
+
+    ax.set_title('Seaborn Confusion Matrix\n\n')
+    ax.set_xlabel('\nPredicted Values')
+    ax.set_ylabel('Actual Values ')
+
+    # Ticket labels - List must be in alphabetical order
+    ax.xaxis.set_ticklabels(['Normal', 'Intrusion'])
+    ax.yaxis.set_ticklabels(['Normal', 'Intrusion'])
+
+    # Display the visualization of the Confusion Matrix.
+    plt.show()
+
+
 
 def predict(size):
     X_train, y_train = dataset_selector(size)
@@ -148,14 +267,40 @@ def predict(size):
 
     clf = SVM(n_iters=1000)
     clf.fit(X_train, y_train)
-    predictions = clf.predict(X_test)
+
+    if(size == 4):
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
+        joblib.dump(clf, model_path)        
+        model_svm = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+        f.write("svm kdd")
+        f.close()
+
+    else:
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
+        joblib.dump(clf, model_path)
+        model_svm = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+        f.write("svm cicids")
+        f.close()
+
+    predictions = model_svm.predict(X_test)
 
     _accuracy = str(accuracy(y_test, predictions)) + "%"
-    return _accuracy, clf, X_train, X_test, y_train, y_test
+    return _accuracy, clf, X_train, X_test, y_train, y_test, predictions
 
 
-#size = 6
-#size = 4
-#accuracy, clf, X_train, X_test, y_train, y_test = predict(size)
-#print("Accuracy: " + str(accuracy))
-#plot_graph(clf, X_train, X_test, y_train, y_test)
+# size = 6
+# #size = 4
+# accuracy, clf, X_train, X_test, y_train, y_test, predictions = predict(size)
+# print("Accuracy: " + str(accuracy))
+# plot_graph(clf, X_train, X_test, y_train, y_test)
+# print("roc curve")
+# roc_curve(predictions, y_test)
+# # print("confusion matrix")
+# # y_test = [1, 1, 0, 0, 1, 1, 1, 1, 1 ,1]
+# # predictions = [1 ,1 ,1, 1 ,1, 1, 1, 1, 1 ,0]
+
+# plot_confusion_matrix(y_test, predictions)

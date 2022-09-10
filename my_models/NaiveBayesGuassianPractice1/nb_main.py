@@ -1,8 +1,14 @@
-import math
+from array import array
+import datetime
+import json
+from unittest import result
 import numpy as np
 import pandas as pd
+import joblib
+from pickle import load
 
 from my_models.NaiveBayesGuassianPractice1.GuassianClass import GaussianNB
+#from GuassianClass import GaussianNB
 
 def accuracy_score(y_true, y_pred):
     # return (y_true - y_pred) / len(y_true)
@@ -40,7 +46,7 @@ def cicids_train_pre_processing(df):
     # remove special character
     df[['Label']] = np.where(df[['Label']] == 'BENIGN', 1, 0)
 
-    X = df[['FlowDuration', 'TotalFwdPackets', 'TotalFwdPackets', 'TotalBackwardPackets',
+    X = df[['FlowDuration', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
@@ -109,23 +115,89 @@ def data_train(size):
         return df_train
 
 
+def model_select(size, d):
+
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+    f.write("nb")
+    f.close()
+
+    data = np.array(d["data"])
+
+    data_to_file = "Naive Bayes Scanning data " +  str(datetime.datetime.now()) + "\n"
+    if size != 4:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        X_data = data.reshape(-1, 6)
+    else:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        temp_data = data.reshape(-1, 5)
+        X_data = []
+        for x in range(len(temp_data)):
+            j = list(temp_data[x])
+            j.pop(3) # remove fwd length
+            # j.pop(2) # remove bck length
+
+            X_data.append(j)
+
+    predict = mj.predict(X_data)
+
+    results = []
+    percentage = 0
+    for x in range(len(temp_data)):
+        j = list(temp_data[x])
+        if(predict[x] == 0):
+            j.append(False)
+        else:
+            j.append(True)
+            percentage += 1
+        data_to_file += str(j) + "\n"
+    
+        results.append(j)
+
+    percentage = percentage / len(temp_data) * 100     
+
+    data_to_file += "Percentage: " + str(percentage) + "%\nn"
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
+    f.write(data_to_file)
+    f.close()
+
+    return results
+
+
 def load_main(size):
     df_train = data_train(size)
     X_train, y_train = dataset_selector(df_train, size)
 
     # Split data into Training and Testing Sets
-    X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.8, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=.8, random_state=0)
 
     gnb_clf = GaussianNB()
     gnb_clf.fit(X_train, y_train)
-    predict = gnb_clf.predict(X_train)
-    accuracy = accuracy_score(y_train, predict)
+
+    if(size == 4):
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
+        joblib.dump(gnb_clf, model_path)        
+        model_nb = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+        f.write("nb kdd")
+        f.close()
+
+    else:
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
+        joblib.dump(gnb_clf, model_path)
+        model_nb = joblib.load(model_path)
+
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
+        f.write("nb cicids")
+        f.close()
+
+    predict = model_nb.predict(X_test)
+
+    accuracy = accuracy_score(y_test, predict)
 
     return str(accuracy) + "%"
-    #return X_train, X_test, y_train, y_test
 
-
-#size = 6
-#size = 4
-#accuracy = load_main(size)
-#print("accuracy: " + str(accuracy))
+# size = 6
+# size = 4
+# accuracy = load_main(size)
+# print("accuracy: " + str(accuracy))

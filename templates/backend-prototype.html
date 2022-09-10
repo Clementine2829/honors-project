@@ -214,18 +214,14 @@
     </div>
 
     <script type="text/javascript">
-
         $(document).ready(function(){
-
             $("#submit_btn").click(function(){
-
                 let dataset = get_dataset();
                 let model = get_model();
 
                 if(dataset == "" || model ==""){
                     return;
                 }
-
                 let url = dataset + "/" + model;
                 $("#submit_btn").prop("disabled", false);
                 $("#submit_btn").html("Submit");
@@ -235,7 +231,7 @@
                 xhttp.onreadystatechange = function(){
                     if (this.readyState > 0 || this.readyState < 4){
                         $("#submit_btn").prop("disabled", true);
-                        $("#submit_btn").html("loading...");
+                        $("#submit_btn").html("loading..Please wait");
                         $("#reset_btn").prop("disabled", true);
                         $("#reset_btn").css({"display": "none"});
                     }
