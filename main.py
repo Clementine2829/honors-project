@@ -15,7 +15,11 @@ def home():
 
 @app.route("/client")
 def client():
-    return render_template("frontend-prototype.html", NB_MODEL = 80, NN_MODEL = 86, SVM_MODEL = 98.95)
+
+    nb = 57.22
+    nn = 80
+    svm = 95.19
+    return render_template("frontend-prototype.html", NB_MODEL = nb, NN_MODEL = nn, SVM_MODEL = svm)
 
 # JINJA2
 def mygnb(size):
@@ -79,22 +83,27 @@ def test(model, dataset):
         return ""
 
 
-def load_model(size, data):
-    if size == 4:
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "r")
-        model = f.readline()
+def load_model(model, data):
+    if model == "nb":
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nb_model.txt", "r")
+        size = f.readline() # this file has the size of the dataset used
         f.close() 
-    else:
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "r")
-        model = f.readline()
-        f.close()
+    elif model == "nn":
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nn_model.txt", "r")
+        size = f.readline() # this file has the size of the dataset used
+        f.close() 
+    elif model == "svm":
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model.txt", "r")
+        size = f.readline() # this file has the size of the dataset used
+        f.close() 
 
     if (model == "nb"):
         from run_model import model_select_nb
 
         # return a 2D array
         model = "Naive Bayes"
-        results = {'data': str(model_select_nb(size, data)), "percentage": "80%", "model": model}
+        data, percentage = model_select_nb(size, data)
+        results = {'data': str(data), "percentage": str(percentage) + "%", "model": model}
         return results
 
     elif (model == "nn"):
@@ -102,7 +111,8 @@ def load_model(size, data):
 
         # return a 2D array
         model = "Neural Network"
-        results = {'data': str(model_select_nn(size, data)), "percentage": "80%", "model": model}
+        data, percentage = model_select_nn(size, data)
+        results = {'data': str(data), "percentage": str(percentage) + "%", "model": model}
         return results
 
     elif (model == "svm"):
@@ -110,7 +120,8 @@ def load_model(size, data):
 
         # return a 2D array
         model = "Support Vector Machine"
-        results = {'data': str(model_select_svm(size, data)), "percentage": "80%", "model": model}
+        data, percentage = model_select_svm(size, data)
+        results = {'data': str(data), "percentage": str(percentage) + "%", "model": model}
         return results
 
     else:
@@ -120,15 +131,7 @@ def load_model(size, data):
 @app.route("/client/<model>", methods = ['POST'])
 def test_model(model):
     data = request.json
-    # print("model")
-    # print(model)
-    # print(data)
-
-    # if (model == "nb"):
-    size = 4
-    # data = np.array([1,1,1517,332,44,0,1,334,0,45,0,1,314,810,100,0,1,0,0,0,0,1,0,0,122,0,1,0,0,1584,0,1,458,6452,100,5,1,11895,1359,652,1,1,851,325,2355,0,1,0,0,0,0,0,0,0,755,1,0,33,45,66,2,0,3,0,0,5,1,650,70,230,0,1,100,455,1000])
-
-    return load_model(size, data)
+    return load_model(model, data)
 
 
 

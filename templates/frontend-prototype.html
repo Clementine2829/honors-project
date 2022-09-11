@@ -121,7 +121,7 @@
             border-radius: 7px;
             padding: 1% 2%;
             margin-top: 1%;
-			margin-bottom: 5%;
+			margin-bottom: 2%;
 		}
 
 		/**********************/
@@ -166,6 +166,9 @@
 			border-radius: 10px;
 			color: white;
 		}
+		#run_test_2{
+			margin-top: 2% !important; 
+		}
     </style>
     
 </head>
@@ -176,7 +179,7 @@
 		<div class="col-sm-1" ></div>
 		<div class="col-sm-5">
 			<div class="subNavitems">
-				<a href="prototype.html">
+				<a href="/client">
                     Network Intrusion detection system
 				</a>
 			</div>
@@ -324,6 +327,7 @@
 				<div class="test">
 					<p><strong>Select log file to scan</strong></p>
 					<input type="file" name="inputfile" id="inputfile">	<br>
+					<span id="err_msg_1" style="color: red"></span><br>
 					
 					<p><strong>Select models below</strong></p>
 					<div id="models">
@@ -340,7 +344,6 @@
 							<span>Support Vector Machine (SVM) {Accuracy: {{SVM_MODEL}}%}</span><br>
 						</div>
 					</div>
-					<span id="err_msg_1" style="color: red"></span>
 					<span id="err_msg_2" style="color: red"></span>
 					<button id="run_test_2">Run Test</button>
 				</div>				
@@ -374,12 +377,6 @@
 			})
             $("#run_test_2").click(function(){
 
-				$("#err_msg_2").html("");
-				let model = get_model();
-				if(model == ""){
-					$("#err_msg").html("Select model to use * <br><br>");
-					return;
-				}				
 
 				$("#run_test_2").prop("disabled", true);
 				let input = document.getElementById("inputfile");
@@ -388,6 +385,15 @@
 				let arr_data = [];
 
 				$("#err_msg_1").html("")
+				$("#err_msg_2").html("");
+				let model = get_model();
+				file = get_my_file(file);
+
+				if (model == "" || file == "") {
+					$("#run_test_2").prop("disabled", false);
+					return;
+				}
+
 				reader.readAsText(file);
 				reader.onload = function() {
 					let text = reader.result.toString();
@@ -397,7 +403,7 @@
 						for(let j = 0; j < temp_inner_arr.length; j++){
 							let x = validate_data(Number(temp_inner_arr[j]));
 							if(x == null){
-								$("#err_msg").html("File data not formated correctly. <br>Please fix it");
+								$("#err_msg").html("File data not formated correctly. <br>Please fix it<br>");
 								$("#run_test_2").prop("disabled", false);
 								return;
 							}
@@ -451,7 +457,7 @@
 									$("#table_data").html(div);
 								}
 								if(d.percentage != "undefined"){
-									$("#percentage").html("<br>Model accuracy: " + d.percentage);
+									$("#percentage").html("<br>Normal packets percentage: " + d.percentage);
 								}
 								if(d.model != "undefined"){
 									$("#model_used").html("Model used: : " + d.model);
@@ -475,7 +481,13 @@
 
 			})
 		})
-
+		function get_my_file(file){
+			if (typeof(file) != "object") {
+				$("#err_msg_1").html("Invalid file detected *<br>");
+				return "";
+			}
+			return file;
+		}
 		function get_model(){
 			let models = $("#models .models");
 			for(let i = 0; i < models.length; i++){
@@ -484,6 +496,7 @@
 					return model;
 				}
 			}
+			$("#err_msg_2").html("Select model to use * <br>");
 			return "";
 		}
 
