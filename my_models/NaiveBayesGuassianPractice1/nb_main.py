@@ -117,10 +117,6 @@ def data_train(size):
 
 def model_select(size, d):
 
-    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-    f.write("nb")
-    f.close()
-
     data = np.array(d["data"])
 
     data_to_file = "Naive Bayes Scanning data " +  str(datetime.datetime.now()) + "\n"
@@ -178,22 +174,24 @@ def load_main(size):
         joblib.dump(gnb_clf, model_path)        
         model_nb = joblib.load(model_path)
 
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-        f.write("nb kdd")
-        f.close()
-
     else:
         model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
         joblib.dump(gnb_clf, model_path)
         model_nb = joblib.load(model_path)
 
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
-        f.write("nb cicids")
-        f.close()
-
     predict = model_nb.predict(X_test)
 
     accuracy = accuracy_score(y_test, predict)
+
+    if(size == 4):
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
+        f.write("nb kdd" + str(accuracy))
+        f.close()
+
+    else:
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
+        f.write("nb cicids" + str(accuracy))
+        f.close()
 
     return str(accuracy) + "%"
 

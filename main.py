@@ -15,7 +15,7 @@ def home():
 
 @app.route("/client")
 def client():
-    return render_template("frontend-prototype.html")
+    return render_template("frontend-prototype.html", NB_MODEL = 80, NN_MODEL = 86, SVM_MODEL = 98.95)
 
 # JINJA2
 def mygnb(size):

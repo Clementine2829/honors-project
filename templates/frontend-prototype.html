@@ -124,6 +124,18 @@
 			margin-bottom: 5%;
 		}
 
+		/**********************/
+		#models {
+			width: 100%;
+		}
+		#models .models {
+			width: 100%;
+		}
+		#models .models input[type=radio] {
+			width: auto;
+			margin-bottom: 4%;
+		}
+
 		/**************************/        
  
 		#body .results{
@@ -310,9 +322,26 @@
 					</div>	
 				</div>
 				<div class="test">
-					<p>Select log file to scan</p>
+					<p><strong>Select log file to scan</strong></p>
 					<input type="file" name="inputfile" id="inputfile">	<br>
-					<span id="err_msg" style="color: red"></span>
+					
+					<p><strong>Select models below</strong></p>
+					<div id="models">
+						<div class="models">
+							<input type="radio" id="model_1" name="models" value="nb"> 
+							<span>Naive Bayes {Accuracy: {{NB_MODEL}}%}</span><br>
+						</div>
+						<div class="models">
+							<input type="radio" id="model_1" name="models" value="nn"> 
+							<span>Neural Network {Accuracy: {{NN_MODEL}}%}</span><br>
+						</div>
+						<div class="models">
+							<input type="radio" id="model_1" name="models" value="svm"> 
+							<span>Support Vector Machine (SVM) {Accuracy: {{SVM_MODEL}}%}</span><br>
+						</div>
+					</div>
+					<span id="err_msg_1" style="color: red"></span>
+					<span id="err_msg_2" style="color: red"></span>
 					<button id="run_test_2">Run Test</button>
 				</div>				
             </div>
@@ -341,9 +370,16 @@
 
 		$(document).ready(function(){
             $("#run_test_1").click(function(){
-				alert("Hi there");
+				// alert("Hi there");
 			})
             $("#run_test_2").click(function(){
+
+				$("#err_msg_2").html("");
+				let model = get_model();
+				if(model == ""){
+					$("#err_msg").html("Select model to use * <br><br>");
+					return;
+				}				
 
 				$("#run_test_2").prop("disabled", true);
 				let input = document.getElementById("inputfile");
@@ -351,7 +387,7 @@
 				let reader = new FileReader();
 				let arr_data = [];
 
-				$("#err_msg").html("")
+				$("#err_msg_1").html("")
 				reader.readAsText(file);
 				reader.onload = function() {
 					let text = reader.result.toString();
@@ -426,7 +462,6 @@
 						}
 					}
 					
-					let model = "nb";
 					let url = "client/" + model;
 					let data = '{"data": ' + "[" + arr_data + "]" + '}';
 					data =  JSON.parse(data);
@@ -440,6 +475,17 @@
 
 			})
 		})
+
+		function get_model(){
+			let models = $("#models .models");
+			for(let i = 0; i < models.length; i++){
+				if($("#models .models:nth-child(" + (i+1) + ") input").is(':checked')){
+					let model = $("#models .models:nth-child(" + (i+1) + ") input").val();
+					return model;
+				}
+			}
+			return "";
+		}
 
 		function validate_data(x){
 			let pattern = /\d/;
