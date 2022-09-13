@@ -3,6 +3,8 @@
 
 ### Network Intrusion Detection system using Artificial Intelligence (Machine learning)
 
+It scans packets on a network, and using its intelligence, it predict if is normal or mallicious. 
+
 The three machine learning algorithms that I created are Convolutional neural network, Deep Neural Network, and Support Vector Machine without using libraries. They are all build from scratch. The libraries used are for plotting graphs and those fancy stuff. 
 
 Convolutional neural network - is a type of artificial neural network used in image recognition and processing that is specifically designed to process pixel data.
