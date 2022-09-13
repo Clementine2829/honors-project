@@ -249,6 +249,66 @@ def plot_confusion_matrix(y_true, y_pred):
     # Display the visualization of the Confusion Matrix.
     plt.show()
 
+def rearange_data(x):
+
+
+    return x
+
+def model_select(size, d):
+
+    data = np.array(d["data"])
+    temp_data = data.reshape(-1, 6)
+
+    print("Size ")
+    print(size)
+
+    data = np.array(d["data"])
+    print("data")
+    print(data)
+
+    data_to_file = "Suppory Vector Machine Scanning data " +  str(datetime.datetime.now()) + "\n"
+    if size != "4":
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        X_data = []
+        for x in range(len(temp_data)):
+            j = rearange_data(list(temp_data[x]))
+            print(j)
+            X_data.append(j)
+
+    else:
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model")
+        X_data = []
+        for x in range(len(temp_data)):
+            j = list(temp_data[x])
+            j.pop(3) # remove fwd length
+            j.pop(2) # remove bck length
+
+            X_data.append(j)
+
+    predict = mj.predict(X_data)
+
+    results = []
+    percentage = 0
+    for x in range(len(temp_data)):
+        j = list(temp_data[x])
+        if(predict[x] == 0):
+            j.append(False)
+            percentage += 1
+        else:
+            j.append(True)
+        data_to_file += str(j) + "\n"
+    
+        results.append(j)
+
+    percentage = percentage / len(temp_data) * 100     
+
+    data_to_file += "Percentage: " + str(percentage) + "%\n"
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
+    f.write(data_to_file)
+    f.close()
+
+    return results, round(percentage, 2)
+
 
 
 def predict(size):
@@ -269,26 +329,43 @@ def predict(size):
     clf.fit(X_train, y_train)
 
     if(size == 4):
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
-        joblib.dump(clf, model_path)        
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model"
+        joblib.dump(clf , model_path)        
         model_svm = joblib.load(model_path)
-
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-        f.write("svm kdd")
-        f.close()
 
     else:
         model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
         joblib.dump(clf, model_path)
         model_svm = joblib.load(model_path)
 
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-        f.write("svm cicids")
-        f.close()
-
     predictions = model_svm.predict(X_test)
 
+    print("X_data")
+    print(X_test)
+
+    print("Y Data")
+    print(y_test)
+
+    print("Predictions")
+    print(predictions)
+
+
     _accuracy = str(accuracy(y_test, predictions)) + "%"
+
+    if(size == 4):
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model.txt", "w")
+        f.write("4")
+        f.close()
+
+    else:
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model.txt", "w")
+        f.write("6")
+        f.close()
+
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model_percentage.txt", "w")
+    f.write(str(_accuracy))
+    f.close()
+
     return _accuracy, clf, X_train, X_test, y_train, y_test, predictions
 
 

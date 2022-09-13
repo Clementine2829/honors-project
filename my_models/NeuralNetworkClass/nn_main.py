@@ -149,22 +149,27 @@ def data_train(size):
 
 def model_select(size, d):
     data = np.array(d["data"])
+    temp_data = data.reshape(-1, 6)
 
     data_to_file = "Neural Network Scanning data " +  str(datetime.datetime.now()) + "\n"
     if size != "4":
         mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
-        X_data = data.reshape(-1, 6)
+        X_data = []
+        for x in range(len(temp_data)):
+            j = list(temp_data[x])
+
+            X_data.append(j)
+        
     else:
         mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model")
-        temp_data = data.reshape(-1, 5)
         X_data = []
         for x in range(len(temp_data)):
             j = list(temp_data[x])
             j.pop(3) # remove fwd length
-            # j.pop(2) # remove bck length
+            j.pop(2) # remove bck length
 
             X_data.append(j)
-    
+        
     predict = mj.predict(X_data)
 
     arr_predict = []

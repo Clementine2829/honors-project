@@ -77,7 +77,7 @@ def mysvm(size):
     from my_models.SupportVectorMachineClass.svm_main import predict, plot_graph
 
     accuracy, clf, X_train, X_test, y_train, y_test, predictions = predict(size)
-    print("Accuracy: " + str(accuracy))
+    # print("Accuracy: " + str(accuracy))
     plot_graph(clf, X_train, X_test, y_train, y_test)
     roc_curve(predictions, y_test)
     plot_confusion_matrix(y_test, predictions)
