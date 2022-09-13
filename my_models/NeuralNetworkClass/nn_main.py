@@ -147,50 +147,56 @@ def data_train(size):
         return df_train
 
 
-def model_select(size, data):
-    
-    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-    f.write("nn")
-    f.close()
+def model_select(size, d):
+    data = np.array(d["data"])
 
     data_to_file = "Neural Network Scanning data " +  str(datetime.datetime.now()) + "\n"
-    if size != 4:
+    if size != "4":
         mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
-        X_data = data.reshape(-1, 5)
+        X_data = data.reshape(-1, 6)
     else:
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model")
         temp_data = data.reshape(-1, 5)
         X_data = []
         for x in range(len(temp_data)):
             j = list(temp_data[x])
             j.pop(3) # remove fwd length
-            j.pop(2) # remove bck length
+            # j.pop(2) # remove bck length
 
             X_data.append(j)
-
+    
     predict = mj.predict(X_data)
+
+    arr_predict = []
+    for x in range(len(predict)):
+        d = list(predict[x])
+        if (d[0][0] < d[0][1]):
+            arr_predict.append(0)
+        else:
+            arr_predict.append(1)
 
     results = []
     percentage = 0
     for x in range(len(temp_data)):
         j = list(temp_data[x])
-        if(predict[x] == 0):
+        if(arr_predict[x] == 0):
             j.append(False)
+            percentage += 1
         else:
             j.append(True)
-            percentage += 1
         data_to_file += str(j) + "\n"
     
         results.append(j)
 
     percentage = percentage / len(temp_data) * 100     
 
-    data_to_file += "Percentage: " + str(percentage) + "%\n\n"
+    data_to_file += "Percentage: " + str(percentage) + "%\n"
     f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
     f.write(data_to_file)
     f.close()
 
-    return results
+    return results, round(percentage, 2)
+ 
 
 def load_main(size):
     net = MyNeuralNetwork()
@@ -211,26 +217,34 @@ def load_main(size):
 
 
     if(size == 4):
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model"
         joblib.dump(net, model_path)        
         model_nn = joblib.load(model_path)
-
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-        f.write("svm")
-        f.close()
 
     else:
         model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
         joblib.dump(net, model_path)
         model_nn = joblib.load(model_path)
 
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
-        f.write("svm")
-        f.close()
 
     out = model_nn.predict(X_test[0:])
 
     accuracy, pred_values, truth_values = net.get_accuracy(out, y_test[0:])
+
+    if(size == 4):
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nn_model.txt", "w")
+        f.write("4")
+        f.close()
+
+    else:
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nn_model.txt", "w")
+        f.write("6")
+        f.close()
+    
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nn_model_percentage.txt", "w")
+    f.write(str(accuracy) + "%")
+    f.close()
+    
 
     return str(accuracy) + "%", pred_values, truth_values
 

@@ -16,9 +16,28 @@ def home():
 @app.route("/client")
 def client():
 
-    nb = 57.22
-    nn = 80
-    svm = 95.19
+
+    try:      
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nb_model_percentage.txt", "r")
+        nb = f.readline() # this file has the size of the dataset used
+        f.close()
+    except FileNotFoundError:
+        nb = "NA"
+
+    try:      
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nn_model_percentage.txt", "r")
+        nn = f.readline() # this file has the size of the dataset used
+        f.close()
+    except FileNotFoundError:
+        nn = "NA"
+
+    try:      
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model_percentage.txt", "r")
+        svm = f.readline() # this file has the size of the dataset used
+        f.close() 
+    except FileNotFoundError:
+        svm = "NA"
+
     return render_template("frontend-prototype.html", NB_MODEL = nb, NN_MODEL = nn, SVM_MODEL = svm)
 
 # JINJA2
@@ -96,7 +115,7 @@ def load_model(model, data):
         f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/svm_model.txt", "r")
         size = f.readline() # this file has the size of the dataset used
         f.close() 
-
+        
     if (model == "nb"):
         from run_model import model_select_nb
 

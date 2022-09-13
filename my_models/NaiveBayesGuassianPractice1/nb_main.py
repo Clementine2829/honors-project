@@ -116,15 +116,15 @@ def data_train(size):
 
 
 def model_select(size, d):
-
+    
     data = np.array(d["data"])
 
     data_to_file = "Naive Bayes Scanning data " +  str(datetime.datetime.now()) + "\n"
-    if size != 4:
+    if size != "4":
         mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
         X_data = data.reshape(-1, 6)
     else:
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nb_joblib_model")
         temp_data = data.reshape(-1, 5)
         X_data = []
         for x in range(len(temp_data)):
@@ -142,21 +142,21 @@ def model_select(size, d):
         j = list(temp_data[x])
         if(predict[x] == 0):
             j.append(False)
+            percentage += 1
         else:
             j.append(True)
-            percentage += 1
         data_to_file += str(j) + "\n"
     
         results.append(j)
 
     percentage = percentage / len(temp_data) * 100     
 
-    data_to_file += "Percentage: " + str(percentage) + "%\nn"
+    data_to_file += "Percentage: " + str(percentage) + "%\n"
     f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/log.txt", "a")
     f.write(data_to_file)
     f.close()
 
-    return results
+    return results, round(percentage, 2)
 
 
 def load_main(size):
@@ -170,7 +170,7 @@ def load_main(size):
     gnb_clf.fit(X_train, y_train)
 
     if(size == 4):
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model"
+        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nb_joblib_model"
         joblib.dump(gnb_clf, model_path)        
         model_nb = joblib.load(model_path)
 
@@ -184,14 +184,18 @@ def load_main(size):
     accuracy = accuracy_score(y_test, predict)
 
     if(size == 4):
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/kdd_model.txt", "w")
-        f.write("nb kdd" + str(accuracy))
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nb_model.txt", "w")
+        f.write("4")
         f.close()
 
     else:
-        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/cicids_model.txt", "w")
-        f.write("nb cicids" + str(accuracy))
+        f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nb_model.txt", "w")
+        f.write("6")
         f.close()
+
+    f = open("C:/Users/CLEMENTINE/Desktop/pythonProject/project/nb_model_percentage.txt", "w")
+    f.write(str(accuracy) + "%")
+    f.close()
 
     return str(accuracy) + "%"
 
