@@ -1,9 +1,7 @@
 # honors-project
-## University of Johannesburg (BSc in Hons IT)
+### University of Johannesburg (BSc in Hons IT)
 
-## Network Intrusion Detection system using Artificial Intelligence 
-
-This project is a Network Intrusion Detection system that uses machine learning. I
+### Network Intrusion Detection system using Artificial Intelligence (Machine learning)
 
 The three machine learning algorithms that I created are Convolutional neural network, Deep Neural Network, and Support Vector Machine without using libraries. They are all build from scratch. The libraries used are for plotting graphs and those fancy stuff. 
 
