@@ -1,0 +1,316 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- JQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+	<title>Network Intrusion detection system</title>
+    
+    <style type="text/css">
+        #top_nav{
+            /*position: fixed;*/
+            margin: 2% auto;
+        }
+        #top_nav .col-sm-5{
+            float: left;
+            margin: 0px;
+            padding: 0px;
+        }
+        #top_nav .col-sm-5 .subNavitems{
+            float: left;
+            font-size: 25px;
+        }
+        #top_nav .col-sm-5 .subNavitems a{
+            color: blue;
+            padding-left: 0px;
+            text-decoration: none;
+        }
+        #top_nav .col-sm-5 .btns{
+            float: right;
+            padding-right: 1%;
+            display: inline;
+            width: auto;
+            display: none;
+        }
+        #top_nav .col-sm-5 .btns .btn{
+            float: left;
+            width: 100%;
+            margin-right: 2%;
+        }
+        #top_nav .col-sm-5 .btns .btn button{
+            background-color: blue;
+            color: white;
+            border-radius: 7px;
+            border: none;
+            padding: 1% 20%;
+        }
+        
+        #body .information{
+            margin-top: 5%;
+        }
+        #body .information h2{
+            text-align: center;
+            margin-bottom: 4%;
+        }
+        #body .information p{
+            margin-bottom: 6%;
+        }   
+		
+		#body .test colgroup col:nth-child(1){
+			width: 35%;
+		}
+		#body .test table tr td:nth-child(1){
+			padding: 1% 2%;
+		}
+		#body .test table tr td:nth-child(1) p{
+			margin-top: 10%;
+		}
+		#body .test table tr td:nth-child(2) input,
+		#body .test table tr td:nth-child(2) select {
+			padding: 2% 5%;
+		}
+        #body .test{
+            text-align: left;
+            border: 2px dotted gray;
+            padding: 2%;
+            border-radius: 10px;
+        }
+        #body .test select, 
+        #body .test input, 
+        #body .test button{
+			width: 100%;
+			background-color: rgb(230, 230, 230) ;
+            border: 1px solid lightblue;
+            border-radius: 7px;
+            padding: 1% 2%;
+            margin-top: 1%;
+        }
+        #body .test .sub_test{
+            display: inline;
+            margin: 2px;
+        }
+        #body .test .sub_test button{
+            background-color: lightblue;
+        }
+        #body .test .sub_test button:hover{
+            background-color: rgb(225, 225, 225);
+            
+        }
+		/**************************/        
+ 
+		#body .results{
+            text-align: center;
+            margin: 1% auto 5% auto;
+            padding-top: 2%;
+            width: 100%;
+        }
+        #body .results table{
+            border-collapse: collapse;
+            /*border: 1px solid lightblue;*/
+            width: 100%;
+            padding: 2% 5%;
+            margin-top: 2%;
+        }
+        #body .results table span{
+        }
+        #body .results table tr{
+            border-bottom: 1px solid lightblue;
+        }
+        #body .results table tr th,
+        #body .results table tr td{
+            padding: 1%;
+        }
+
+    </style>
+    
+</head>
+<body>
+	<div class="row" id="top_nav">
+		<div class="col-sm-1" ></div>
+		<div class="col-sm-5">
+			<div class="subNavitems">
+				<a href="prototype.html">
+                    Network Intrusion detection system
+				</a>
+			</div>
+		</div>
+		<div class="col-sm-5">
+                <div class="btns">
+                    <div class="btn">
+                        <button >Information</button>
+<!--                    </div>
+                    <div class="btn">
+-->                        <button >Test</button>
+                    </div>
+                </div>
+		</div>
+		<div class="col-sm-1" ></div>
+    </div>
+    
+    <div class="row" id="body">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+            <div class="information">
+                <h2>Network Intrusion detection system <br><i>using Artificial Intelligence</i></h2>
+                <p>
+                    Scan network packets as they arrive and identify them if they are malicious or benign<br>
+                    This is archived by the use of artificial inteligence technique 
+                </p>
+            </div>
+            <br>
+            
+            <div class="test">
+                <h4> Fill up the table below to test your data using the classification model</h4>				
+				<table>
+					<colgroup>
+						<col span="1">
+						<col span="1">
+					</colgroup>
+					<tbody>						
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Duration:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<input type="text" id="duration" placeholder="Duration">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Protocol:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<select id="protocol">
+									<option value="">-Select-</option>
+									<option value="tcp">TCP</option>
+									<option value="udp">UDP</option>
+									<option value="icmp">ICMP</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Service:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<select id="service">
+									<option value="">-Select-</option>
+									<option value="http">HTTP</option>
+									<option value="telnet">Telnet</option>
+									<option value="smtp">SMTP</option>
+									<option value="private">Private</option>
+									<option value="ftp">FTP</option>
+									<option value="ftp_data">FTP_DATA</option>
+									<option value="eco_i">ECO_I</option>
+									<option value="idap">Idap</option>
+									<option value="pop_3">Pop_3</option>
+									<option value="finger">Finger</option>
+									<option value="csnet_sn">Csnet_ns</option>
+									<option value="pop_3">Pop_3</option>
+									<option value="iso_tsap">Iso_tsap</option>
+									<option value="domain_u">Domain_u</option>
+									<option value="discard">Discard</option>
+									<option value="curier">Curier</option>
+									<option value="curier">Curier</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Src bytes:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<input type="number" id="src_byte" placeholder="Src bytes">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Dst bytes:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<input type="number" id="dst_byte" placeholder="Dst bytes">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>
+									<strong>
+										Model:
+									</strong>
+								</p>
+							</td>
+							<td>
+								<select id="model">
+									<option value="">-Select-</option>
+									<option value="svm">Support Vector Machine</option>
+									<option value="naive_bayes">Naive Bayes</option>
+									<option value="neural_network">Neural Network</option>
+								</select>
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+				
+                <div class="sub_test">
+                    <button>Run Test</button>
+                </div>
+            </div>
+            <br>
+            
+            <div class="results">
+                <h4>Test Results</h4>
+                <table>
+                    <span col="1"></span>
+                    <span col="1"></span>
+                    <span col="1"></span>
+                    <tbody>
+                        <tr>
+                            <th>Model</th>
+                            <th>Results</th>
+                            <th>Accuracy</th>
+                        </tr>
+                        <tr>
+                            <td>Support Vector Machine </td>
+                            <td>Normal</td>
+                            <td>95.6325548</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-1"></div>
+    </div>
+    
+    
+</body>      
+</html>
