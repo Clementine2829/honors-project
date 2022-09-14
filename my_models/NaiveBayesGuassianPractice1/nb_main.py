@@ -46,7 +46,7 @@ def cicids_train_pre_processing(df):
     # remove special character
     df[['Label']] = np.where(df[['Label']] == 'BENIGN', 1, 0)
 
-    X = df[['FlowDuration', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
+    X = df[['DestinationPort', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
@@ -122,7 +122,7 @@ def model_select(size, d):
 
     data_to_file = "Naive Bayes Scanning data " +  str(datetime.datetime.now()) + "\n"
     if size != "4":
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nb_joblib_model")
         X_data = []
         for x in range(len(temp_data)):
             j = list(temp_data[x])

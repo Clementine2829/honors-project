@@ -39,7 +39,7 @@ def cicids_train_pre_processing(df):
     # remove special character
     df[['Label']] = np.where(df[['Label']] == 'BENIGN', 1, 0)
 
-    X = df[['FlowDuration', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
+    X = df[['DestinationPort', 'FlowDuration', 'TotalFwdPackets', 'TotalBackwardPackets',
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
@@ -250,7 +250,7 @@ def plot_confusion_matrix(y_true, y_pred):
     plt.show()
 
 def rearange_data(x):
-
+    
 
     return x
 
