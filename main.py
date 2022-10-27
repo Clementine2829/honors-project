@@ -46,11 +46,12 @@ def mygnb(size):
     my_lib_path = os.path.abspath('c:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/NaiveBayesGuassianPractice1/nb_main.py')
     sys.path.append(my_lib_path)
 
-    from my_models.NaiveBayesGuassianPractice1.nb_main import load_main
+    from my_models.NaiveBayesGuassianPractice1.nb_main import load_main, print_confusion_matrix, roc_curve
 
-    accuracy = load_main(size)
-    print("accuracy: " + str(accuracy))
-   
+    accuracy, truth_values, pred_values = load_main(size)
+    print_confusion_matrix(truth_values, pred_values)
+    roc_curve(pred_values, truth_values)
+    
     #return render_template("frontend-prototype.html", ID=accuracy)
     return {"accuracy": accuracy}
 
@@ -60,10 +61,11 @@ def mydnn(size):
     my_lib_path = os.path.abspath('c:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/NeuralNetworkClass/nn_main.py')
     sys.path.append(my_lib_path)
 
-    from my_models.NeuralNetworkClass.nn_main import load_main, print_confusion_matrix
+    from my_models.NeuralNetworkClass.nn_main import load_main, print_confusion_matrix, roc_curve
 
     accuracy, pred_values, truth_values = load_main(size)
-    print_confusion_matrix(pred_values, truth_values)
+    print_confusion_matrix(truth_values, pred_values)
+    roc_curve(pred_values, truth_values)
     
     #return render_template("frontend-prototype.html", ID=accuracy)
     return {"accuracy": accuracy}

@@ -121,10 +121,13 @@ def model_select(size, data):
 
     data_to_file = "SVM Scanning data " +  str(datetime.datetime.now()) + "\n"
     if size != 4:
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        # mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model")
         X_data = data.reshape(-1, 5)
+        print("running here")
     else:
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model")
+        # mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/kdd_joblib_model")
         temp_data = data.reshape(-1, 5)
         X_data = []
         for x in range(len(temp_data)):
@@ -134,6 +137,8 @@ def model_select(size, data):
 
             X_data.append(j)
 
+    print("Data to predict")
+    print(X_data)
     predict = mj.predict(X_data)
 
     results = []
@@ -215,8 +220,8 @@ def plot_confusion_matrix(y_true, y_pred):
     fp = 0
     fn = 0
     for i in range(len(y_pred)):
-        if i < 150:
-            print("Truth: " + str(y_true[i]) + " Pred: " + str(y_pred[i]))
+        # if i < 150:
+            # print("Truth: " + str(y_true[i]) + " Pred: " + str(y_pred[i]))
 
         if y_true[i] == 1 and y_pred[i] == 1:
             tp += 1
@@ -227,20 +232,19 @@ def plot_confusion_matrix(y_true, y_pred):
         elif y_true[i] == 0 and y_pred[i] == 0:
             tn += 1
 
-    print("TP: " + str(tp))
-    print("TN: " + str(tn))
-    print("FP: " + str(fp))
-    print("FN: " + str(fn))
+    # print("TP: " + str(tp))
+    # print("TN: " + str(tn))
+    # print("FP: " + str(fp))
+    # print("FN: " + str(fn))
 
-
-    confusion_matrix(y_true, y_true)
-    cf_matrix = confusion_matrix(y_true, y_true)
+    confusion_matrix(y_true, y_pred)
+    cf_matrix = confusion_matrix(y_true, y_pred)
     print(cf_matrix)
-    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues')
+    ax = sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.1%', cmap='YlGnBu')
 
     ax.set_title('Seaborn Confusion Matrix\n\n')
-    ax.set_xlabel('\nPredicted Values')
-    ax.set_ylabel('Actual Values ')
+    ax.set_xlabel('\nPredicted')
+    ax.set_ylabel('Actual')
 
     # Ticket labels - List must be in alphabetical order
     ax.xaxis.set_ticklabels(['Normal', 'Intrusion'])
@@ -251,7 +255,8 @@ def plot_confusion_matrix(y_true, y_pred):
 
 def rearange_data(x):
     
-
+    print("rearange")
+    print(x)
     return x
 
 def model_select(size, d):
@@ -263,12 +268,11 @@ def model_select(size, d):
     print(size)
 
     data = np.array(d["data"])
-    print("data")
-    print(data)
 
     data_to_file = "Suppory Vector Machine Scanning data " +  str(datetime.datetime.now()) + "\n"
     if size != "4":
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        # mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model")
         X_data = []
         for x in range(len(temp_data)):
             j = rearange_data(list(temp_data[x]))
@@ -284,7 +288,10 @@ def model_select(size, d):
             j.pop(2) # remove bck length
 
             X_data.append(j)
-
+    X_data = np.array(X_data)
+    print("data")
+    print(type(X_data))
+    print(X_data)
     predict = mj.predict(X_data)
 
     results = []
@@ -308,6 +315,7 @@ def model_select(size, d):
     f.close()
 
     return results, round(percentage, 2)
+    # return results, str(str(round(percentage, 2) + " out of " + str(len(temp_data))))
 
 
 
@@ -328,27 +336,29 @@ def predict(size):
     clf = SVM(n_iters=1000)
     clf.fit(X_train, y_train)
 
-    if(size == 4):
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model"
-        joblib.dump(clf , model_path)        
-        model_svm = joblib.load(model_path)
+    # if(size == 4):
+    model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/svm_joblib_model"
+    joblib.dump(clf , model_path)        
+    model_svm = joblib.load(model_path)
 
-    else:
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
-        joblib.dump(clf, model_path)
-        model_svm = joblib.load(model_path)
+    # else:
+    #     model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
+    #     joblib.dump(clf, model_path)
+    #     model_svm = joblib.load(model_path)
+
+    print("data type")
+    print(type(X_test))
 
     predictions = model_svm.predict(X_test)
 
-    print("X_data")
-    print(X_test)
+    # print("X_data")
+    # print(X_test)
 
-    print("Y Data")
-    print(y_test)
+    # print("Y Data")
+    # print(y_test)
 
-    print("Predictions")
-    print(predictions)
-
+    # print("Predictions")
+    # print(predictions)
 
     _accuracy = str(accuracy(y_test, predictions)) + "%"
 

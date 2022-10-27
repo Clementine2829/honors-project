@@ -38,9 +38,10 @@ class MyNeuralNetwork:
         for i in range(length):
             temp_arr = predicted[i].reshape(-1).tolist()
 
-            arr = [0, 1]
             if temp_arr[0] >= temp_arr[1]:
                 arr = [1, 0]
+            else:
+                arr = [0, 1]
 
             if arr[0] == truth[i][0] and arr[1] == truth[i][1]:
                 accuracy += 1

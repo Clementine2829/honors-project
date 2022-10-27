@@ -9,6 +9,7 @@ from my_models.NeuralNetworkClass.activation_layer import ActivationLayer
 
 from keras.utils import to_categorical
 
+from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
@@ -74,6 +75,9 @@ def cicids_train_pre_processing(df):
             'TotalLengthofFwdPackets', 'TotalLengthofBwdPackets']]
     y = df[df.columns[-1]]
 
+    print("Data ")
+    print(X)
+    print(y)
     return X, y
 
 
@@ -153,11 +157,11 @@ def model_select(size, d):
 
     data_to_file = "Neural Network Scanning data " +  str(datetime.datetime.now()) + "\n"
     if size != "4":
-        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        # mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model")
+        mj = joblib.load("C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model")
         X_data = []
         for x in range(len(temp_data)):
             j = list(temp_data[x])
-
             X_data.append(j)
         
     else:
@@ -205,9 +209,9 @@ def model_select(size, d):
 
 def load_main(size):
     net = MyNeuralNetwork()
-    net.add(FCLayer(4, size * 3))
+    net.add(FCLayer(4, size * 4))
     net.add(ActivationLayer(sigmoid, der_sigmoid))
-    net.add(FCLayer(size * 3, size * 2))
+    net.add(FCLayer(size * 4, size * 2))
     net.add(ActivationLayer(sigmoid, der_sigmoid))
     net.add(FCLayer(size * 2, 2))
     net.add(ActivationLayer(sigmoid, der_sigmoid))
@@ -217,19 +221,22 @@ def load_main(size):
     df_train = data_train(size)
     X_train, y_train, X_test, y_test = pre_process_model(df_train, size)
 
+    print("Data again")
+    print(X_train[0:])
+    print(y_train[0:])
     # net.fit(X_train[0:], y_train[0:], epochs=X_train.size, learning_rate=0.1)
-    net.fit(X_train[0:], y_train[0:], epochs=5, learning_rate=0.1)
+    net.fit(X_train[0:], y_train[0:], epochs=5, learning_rate=0.8)
 
 
-    if(size == 4):
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model"
-        joblib.dump(net, model_path)        
-        model_nn = joblib.load(model_path)
+    # if(size == 4):
+    model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/nn_joblib_model"
+    joblib.dump(net, model_path)        
+    model_nn = joblib.load(model_path)
 
-    else:
-        model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
-        joblib.dump(net, model_path)
-        model_nn = joblib.load(model_path)
+    # else:
+    #     model_path = "C:/Users/CLEMENTINE/Desktop/pythonProject/project/my_models/TraindModels/cicids_joblib_model"
+    #     joblib.dump(net, model_path)
+    #     model_nn = joblib.load(model_path)
 
 
     out = model_nn.predict(X_test[0:])
@@ -257,11 +264,11 @@ def load_main(size):
 def print_confusion_matrix(truth_values, pred_values):
     cf_matrix = confusion_matrix(truth_values, pred_values)
     print(cf_matrix)
-    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues')
+    ax = sns.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.1%', cmap='YlGnBu')
 
     ax.set_title('Seaborn Confusion Matrix\n\n')
-    ax.set_xlabel('\nPredicted Values')
-    ax.set_ylabel('Actual Values ')
+    ax.set_xlabel('\nPredicted')
+    ax.set_ylabel('Actual')
 
     # Ticket labels - List must be in alphabetical order
     ax.xaxis.set_ticklabels(['Normal', 'Intrusion'])
@@ -270,6 +277,14 @@ def print_confusion_matrix(truth_values, pred_values):
     # Display the visualization of the Confusion Matrix.
     plt.show()
 
+def roc_curve(y, pred):
+
+    fpr, tpr, thresholds = metrics.roc_curve(np.array(y), np.array(pred), pos_label=1)
+    roc_auc = metrics.auc(fpr, tpr)
+    display = metrics.RocCurveDisplay(fpr=fpr, tpr=tpr, roc_auc=roc_auc, estimator_name='SVM ROC Curve')
+    
+    display.plot()
+    plt.show()
 
 #size = 6
 #size = 4
